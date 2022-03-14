@@ -127,40 +127,26 @@ type AuthorBooks struct {
 	Books    []Book
 }
 
-//func FindAuthorBooks(fullName string) ([]Book, error) {
-//	matchStage := bson.D{{"$match", bson.D{{"full_name", fullName}}}}
-//
-//	lookupStage := bson.D{{"$lookup",
-//		bson.D{{"from", "books"},
-//			{"localField", "full_name"},
-//			{"foreignField", "author"},
-//			{"as", "books"}}}}
-//
-//	showLoadedCursor, err := AuthorsCollection.Aggregate(Ctx,
-//		mongo.Pipeline{matchStage, lookupStage})
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	//
-//	var a []AuthorBooks
-//	if err = showLoadedCursor.All(Ctx, &a); err != nil {
-//		return nil, err
-//	}
-//	//
-//	for showLoadedCursor.Next(Ctx) {
-//		var elem AuthorBooks
-//		err := showLoadedCursor.Decode(&elem)
-//		if err != nil {
-//			log.Fatal(err)
-//		}
-//
-//		a = append(a, &elem)
-//	}
-//
-//
-//	return a[0].Books, err
-//}
+func FindAuthorBooks(fullName string) ([]Book, error) {
+	matchStage := bson.D{{"$match", bson.D{{"full_name", fullName}}}}
+
+	lookupStage := bson.D{{"$lookup",
+		bson.D{{"from", "books"},
+			{"localField", "full_name"},
+			{"foreignField", "author"},
+			{"as", "books"}}}}
+
+	showLoadedCursor, err := AuthorsCollection.Aggregate(Ctx, mongo.Pipeline{matchStage, lookupStage})
+	if err != nil {
+		return nil, err
+	}
+
+	var a []AuthorBooks
+	if err = showLoadedCursor.All(Ctx, &a); err != nil { // https://jira.mongodb.org/browse/GODRIVER-1129
+		return nil, err
+	}
+	return a[0].Books, err
+}
 
 // 6. Удалить книгу:
 func DeleteBook(id primitive.ObjectID) error {
@@ -213,5 +199,14 @@ func main() {
 	UpdateBook(bookId, 199)
 
 	DeleteBook(bookId)
+
+	fullName := "GeeksforGeeks"
+	resultsAll, errAll := FindAuthorBooks(fullName)
+	if errAll != nil {
+		log.Fatal(errAll)
+	}
+	for count, result := range resultsAll {
+		fmt.Printf("%v. - FullName='%v'; Name='%v'; Author='%v'; PageCount='%v'; \n", count, fullName, result.Name, result.Author, result.PageCount)
+	}
 
 }

@@ -2,7 +2,7 @@ module mongodb-go-tutorial
 
 go 1.17
 
-require go.mongodb.org/mongo-driver v1.0.0
+require go.mongodb.org/mongo-driver v1.1.0
 
 require (
 	github.com/andybalholm/brotli v1.0.3 // indirect
