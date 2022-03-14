@@ -1,13 +1,15 @@
-package main
+package app
 
 import (
 	"context"
 	"fmt"
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
+	"os"
 )
 
 var (
@@ -18,9 +20,24 @@ var (
 
 /*Setup opens a database connection to mongodb*/
 func Setup() {
-	host := "127.0.0.1"
-	port := "27017"
-	connectionURI := "mongodb://" + host + ":" + port + "/"
+
+	/**
+	 * @see https://www.loginradius.com/blog/async/environment-variables-in-golang
+	 *      https://github.com/LoginRadius/engineering-blog-samples/tree/master/GoLang/EnvironmentVariables/godotenvtest
+	 *
+	 * load .env file
+	 */
+	err := godotenv.Load(".env")
+
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
+
+	fmt.Println("mongo_host = ", os.Getenv("mongo_host"))
+	fmt.Println("mongo_port = ", os.Getenv("mongo_port"))
+	fmt.Println("mongo_database = ", os.Getenv("mongo_database"))
+
+	connectionURI := "mongodb://" + os.Getenv("mongo_host") + ":" + os.Getenv("mongo_port") + "/"
 	clientOptions := options.Client().ApplyURI(connectionURI)
 	client, err := mongo.Connect(Ctx, clientOptions)
 	if err != nil {
@@ -32,7 +49,7 @@ func Setup() {
 		log.Fatal(err)
 	}
 
-	db := client.Database("example")
+	db := client.Database(os.Getenv("mongo_database"))
 	BooksCollection = db.Collection("books")
 	AuthorsCollection = db.Collection("authors")
 }
@@ -160,59 +177,4 @@ func DeleteBook(id primitive.ObjectID) error {
 		return err
 	}
 	return nil
-}
-
-func main() {
-	Setup()
-
-	//author := Author{ "GeeksforGeeks" }
-
-	//newBook1 := Book{ "How to Use Go With MongoDB", "GeeksforGeeks", 100 } // TODO: 622f6e3fc134f9ed331b4b33
-	//newBook2 := Book{ "How to Do CRUD Transactions in MongoDB with Go", "hackajob Staff", 99 } // TODO: 622f6e3fc134f9ed331b4b34
-	//newBook3 := Book{ "MongoDB Go Driver туториал", "pocoZ", 101 } // TODO: 622f6e3fc134f9ed331b4b35
-	//CreateBook(newBook1)
-	//CreateBook(newBook2)
-	//CreateBook(newBook3)
-
-	//result, err := GetBook("622f6e3fc134f9ed331b4b33")
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//fmt.Printf("Name='%v'; Author='%v'; PageCount='%v'; \n", result.Name, result.Author, result.PageCount)
-
-	results, err := GetBooks()
-	if err != nil {
-		log.Fatal(err)
-	}
-	//fmt.Println(results)
-
-	/*
-	 * https://www.geeksforgeeks.org/loops-in-go-language
-	 */
-	//allRec := 0
-	for count, result := range results {
-		//allRec = count
-		//fmt.Printf("Name='%v'; Author='%v'; PageCount='%v'; \n", result.Name, result.Author, result.PageCount)
-		fmt.Printf("%v. Name='%v'; Author='%v'; PageCount='%v'; \n", count, result.Name, result.Author, result.PageCount)
-	}
-	//allRec = allRec * allRec
-
-	/*
-	 * @see https://serveanswer.com/questions/how-to-convert-string-to-primitive-objectid-in-golang
-	 *      https://stackoverflow.com/questions/60864873/primitive-objectid-to-string-in-golang
-	 */
-	bookId, err := primitive.ObjectIDFromHex("622f6e3fc134f9ed331b4b34")
-	UpdateBook(bookId, 199)
-
-	DeleteBook(bookId)
-
-	fullName := "GeeksforGeeks"
-	resultsAll, errAll := FindAuthorBooks(fullName)
-	if errAll != nil {
-		log.Fatal(errAll)
-	}
-	for count, result := range resultsAll {
-		fmt.Printf("%v. FullName='%v'; > Name='%v'; Author='%v'; PageCount='%v'; \n", count, fullName, result.Name, result.Author, result.PageCount)
-	}
-
 }

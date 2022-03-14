@@ -1,162 +1,63 @@
 package main
 
 import (
-	"context"
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"log"
-
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"mongodb-go-tutorial/app"
 )
 
-/**
- * Host .................... localhost
- * Port .................... 27017
- * (DB) User ...............
- * (DB) Password ...........
- * Database (Collection) ... test
- * Document ................ trainers
- */
-
-type Trainer struct {
-	Name string
-	Age  int
-	City string
-}
-
 func main() {
+	app.Setup()
+
+	//author := Author{ "GeeksforGeeks" }
+
+	//newBook1 := Book{ "How to Use Go With MongoDB", "GeeksforGeeks", 100 } // TODO: 622f6e3fc134f9ed331b4b33
+	//newBook2 := Book{ "How to Do CRUD Transactions in MongoDB with Go", "hackajob Staff", 99 } // TODO: 622f6e3fc134f9ed331b4b34
+	//newBook3 := Book{ "MongoDB Go Driver туториал", "pocoZ", 101 } // TODO: 622f6e3fc134f9ed331b4b35
+	//CreateBook(newBook1)
+	//CreateBook(newBook2)
+	//CreateBook(newBook3)
+
+	//result, err := GetBook("622f6e3fc134f9ed331b4b33")
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//fmt.Printf("Name='%v'; Author='%v'; PageCount='%v'; \n", result.Name, result.Author, result.PageCount)
+
+	results, err := app.GetBooks()
+	if err != nil {
+		log.Fatal(err)
+	}
+	//fmt.Println(results)
 
 	/*
-	 * 1. Open connection to MongoDB
+	 * https://www.geeksforgeeks.org/loops-in-go-language
 	 */
-	// Set connect options
-	client := options.Client().ApplyURI("mongodb://localhost:27017")
-
-	// Connect to MongoDB
-	connect, err := mongo.Connect(context.TODO(), client)
-	if err != nil {
-		log.Fatal(err)
+	//allRec := 0
+	for count, result := range results {
+		//allRec = count
+		//fmt.Printf("Name='%v'; Author='%v'; PageCount='%v'; \n", result.Name, result.Author, result.PageCount)
+		fmt.Printf("%v. Name='%v'; Author='%v'; PageCount='%v'; \n", count, result.Name, result.Author, result.PageCount)
 	}
-
-	// Check the connection
-	err = connect.Ping(context.TODO(), nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println("Connected to MongoDB!")
-
-	// Get a handle for your collection
-	collection := connect.Database("test").Collection("trainers")
+	//allRec = allRec * allRec
 
 	/*
-	 * 2.1 Insert document(s) in collection
+	 * @see https://serveanswer.com/questions/how-to-convert-string-to-primitive-objectid-in-golang
+	 *      https://stackoverflow.com/questions/60864873/primitive-objectid-to-string-in-golang
 	 */
-	// Some dummy data to add to the Database
-	ash := Trainer{"Ash", 10, "Pallet Town"}
-	misty := Trainer{"Misty", 10, "Cerulean City"}
-	brock := Trainer{"Brock", 15, "Pewter City"}
+	bookId, err := primitive.ObjectIDFromHex("622f6e3fc134f9ed331b4b34")
+	app.UpdateBook(bookId, 199)
 
-	// Insert a single document
-	insertOneResult, err := collection.InsertOne(context.TODO(), ash)
-	if err != nil {
-		log.Fatal(err)
+	app.DeleteBook(bookId)
+
+	fullName := "GeeksforGeeks"
+	resultsAll, errAll := app.FindAuthorBooks(fullName)
+	if errAll != nil {
+		log.Fatal(errAll)
 	}
-	fmt.Println("Inserted a single document: ", insertOneResult.InsertedID)
-
-	// Insert multiple documents
-	trainers := []interface{}{misty, brock}
-
-	insertManyResult, err := collection.InsertMany(context.TODO(), trainers)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("Inserted multiple documents: ", insertManyResult.InsertedIDs)
-
-	/*
-	 * 2.2 Matched single document and updated single document
-	 */
-	// Update a document
-	filter := bson.D{{"name", "Ash"}}
-
-	update := bson.D{
-		{"$inc", bson.D{
-			{"age", 1},
-		}},
-	}
-
-	updateResult, err := collection.UpdateOne(context.TODO(), filter, update)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("Matched %v documents and updated %v documents.\n", updateResult.MatchedCount, updateResult.ModifiedCount)
-
-	/*
-	 * 2.3 Found single and multiple document(s)
-	 */
-	// Find a single document
-	var result Trainer
-
-	err = collection.FindOne(context.TODO(), filter).Decode(&result)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Printf("Found a single document: %+v\n", result)
-
-	findOptions := options.Find()
-	findOptions.SetLimit(2)
-
-	var results []*Trainer
-
-	// Finding multiple documents returns a cursor
-	cur, err := collection.Find(context.TODO(), bson.D{{}}, findOptions)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Iterate through the cursor
-	for cur.Next(context.TODO()) {
-		var elem Trainer
-		err := cur.Decode(&elem)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		results = append(results, &elem)
-	}
-
-	if err := cur.Err(); err != nil {
-		log.Fatal(err)
-	}
-
-	// Close the cursor once finished
-	cur.Close(context.TODO())
-
-	fmt.Printf("Found multiple documents (array of pointers): %+v\n", results)
-
-	/*
-	 * 2.4 Deleted document(s) in collection
-	 */
-	// Delete all the documents in the collection
-	deleteResult, err := collection.DeleteMany(context.TODO(), bson.D{{}})
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Printf("Deleted %v documents in the trainers collection\n", deleteResult.DeletedCount)
-
-	/*
-	 * 1. Close connection to MongoDB
-	 */
-	// Close the connection once no longer needed
-	err = connect.Disconnect(context.TODO())
-
-	if err != nil {
-		log.Fatal(err)
-	} else {
-		fmt.Println("Connection to MongoDB closed.")
+	for count, result := range resultsAll {
+		fmt.Printf("%v. FullName='%v'; > Name='%v'; Author='%v'; PageCount='%v'; \n", count, fullName, result.Name, result.Author, result.PageCount)
 	}
 
 }
