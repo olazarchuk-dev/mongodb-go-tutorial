@@ -3,13 +3,13 @@
 * `Tutorial`: https://habr.com/ru/post/433776
 * `Repo`: https://github.com/tfogo/mongodb-go-tutorial
 
-![Screenshot-01](screenshot_01.png)
+![Screenshot-01](img/screenshot_01.png)
 
-![Screenshot-02](screenshot_02.png)
+![Screenshot-02](img/screenshot_02.png)
 
-![Screenshot-03](screenshot_03.png)
+![Screenshot-03](img/screenshot_03.png)
 
-![Screenshot-04](screenshot_04.png)
+![Screenshot-04](img/screenshot_04.png)
 
 
 ---
