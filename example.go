@@ -206,7 +206,7 @@ func main() {
 		log.Fatal(errAll)
 	}
 	for count, result := range resultsAll {
-		fmt.Printf("%v. - FullName='%v'; Name='%v'; Author='%v'; PageCount='%v'; \n", count, fullName, result.Name, result.Author, result.PageCount)
+		fmt.Printf("%v. FullName='%v'; > Name='%v'; Author='%v'; PageCount='%v'; \n", count, fullName, result.Name, result.Author, result.PageCount)
 	}
 
 }
