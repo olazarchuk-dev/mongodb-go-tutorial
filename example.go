@@ -127,6 +127,11 @@ type AuthorBooks struct {
 	Books    []Book
 }
 
+/**
+ * @see https://jira.mongodb.org/browse/GODRIVER-1129
+ *      https://www.mongodb.com/blog/post/quick-start-golang--mongodb--data-aggregation-pipeline
+ *      https://www.digitalocean.com/community/tutorials/how-to-use-aggregations-in-mongodb
+ */
 func FindAuthorBooks(fullName string) ([]Book, error) {
 	matchStage := bson.D{{"$match", bson.D{{"full_name", fullName}}}}
 
@@ -194,6 +199,7 @@ func main() {
 
 	/*
 	 * @see https://serveanswer.com/questions/how-to-convert-string-to-primitive-objectid-in-golang
+	 *      https://stackoverflow.com/questions/60864873/primitive-objectid-to-string-in-golang
 	 */
 	bookId, err := primitive.ObjectIDFromHex("622f6e3fc134f9ed331b4b34")
 	UpdateBook(bookId, 199)
