@@ -1,7 +1,15 @@
-# MongoDB Go Driver Tutorial Part 1: Connecting, Using BSON, and CRUD Operations
+#MongoDB Go Driver туториал
 
 * `Tutorial`: https://habr.com/ru/post/433776
 * `Repo`: https://github.com/tfogo/mongodb-go-tutorial
+
+![Screenshot-01](screenshot_01.png)
+
+![Screenshot-02](screenshot_02.png)
+
+![Screenshot-03](screenshot_03.png)
+
+![Screenshot-04](screenshot_04.png)
 
 
 ---
