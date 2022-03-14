@@ -1,6 +1,8 @@
 #MongoDB Go Driver туториал
 
-* `Tutorial`: https://habr.com/ru/post/433776
+* `Tutorial-1`: https://habr.com/ru/post/433776
+* `Tutorial-2`: https://blog.hackajob.co/crud-transactions-in-mongodb-with-go
+* `Tutorial-3`: https://www.geeksforgeeks.org/how-to-use-go-with-mongodb
 * `Repo`: https://github.com/tfogo/mongodb-go-tutorial
 
 ![Screenshot-01](img/screenshot_01.png)
@@ -11,6 +13,8 @@
 
 ![Screenshot-04](img/screenshot_04.png)
 
+
+* `Установка MongoDB`: https://www.digitalocean.com/community/tutorials/how-to-install-mongodb-on-ubuntu-20-04-ru
 
 ---
 
