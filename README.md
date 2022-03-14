@@ -16,6 +16,8 @@
 
 * `Установка MongoDB`: https://www.digitalocean.com/community/tutorials/how-to-install-mongodb-on-ubuntu-20-04-ru
 
+В MongoDB документы хранятся в виде двоичного JSON, а тег bson означает двоичный JSON в используемом нами драйвере.
+
 ---
 
 The official MongoDB Go Driver [recently moved to GA](#) with the release of version 1.0.0. It's now regarded as feature complete and ready for production use. This tutorial will help you get started with the [MongoDB Go Driver](https://github.com/mongodb/mongo-go-driver/). You will create a simple program and learn how to:
