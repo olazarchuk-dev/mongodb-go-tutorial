@@ -24,6 +24,7 @@ func Setup() {
 	/**
 	 * @see https://www.loginradius.com/blog/async/environment-variables-in-golang
 	 *      https://github.com/LoginRadius/engineering-blog-samples/tree/master/GoLang/EnvironmentVariables/godotenvtest
+	 * https://www.geeksforgeeks.org/golang-environment-variables
 	 *
 	 * load .env file
 	 */
@@ -32,10 +33,6 @@ func Setup() {
 	if err != nil {
 		log.Fatalf("Error loading .env file")
 	}
-
-	fmt.Println("mongo_host = ", os.Getenv("mongo_host"))
-	fmt.Println("mongo_port = ", os.Getenv("mongo_port"))
-	fmt.Println("mongo_database = ", os.Getenv("mongo_database"))
 
 	connectionURI := "mongodb://" + os.Getenv("mongo_host") + ":" + os.Getenv("mongo_port") + "/"
 	clientOptions := options.Client().ApplyURI(connectionURI)
