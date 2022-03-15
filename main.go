@@ -97,6 +97,7 @@ func main() {
 		RandomString(22),
 		time.Now(),
 		time.Now().AddDate(0, 0, 7),
+		//models.AddDate(0, 0, 7),
 	)
 
 	strNewUserId, err := app.CreateUser(newUser)
