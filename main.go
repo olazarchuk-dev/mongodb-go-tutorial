@@ -94,6 +94,7 @@ func main() {
 	/**
 	 * @see https://stackoverflow.com/questions/37135193/how-to-set-default-values-in-go-structs
 	 *      https://www.codegrepper.com/code-examples/go/golang+timestamp+type
+	 *      https://gobyexample.com/random-numbers
 	 */
 	newUser := models.NewUser(
 		"Alex",
