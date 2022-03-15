@@ -92,7 +92,14 @@ func CreateUser(u models.User) (string, error) {
 	if err != nil {
 		return "0", err
 	}
-	return fmt.Sprintf("%v", result.InsertedID), err
+
+	/**
+	 * @see https://solveforums.msomimaktaba.com/threads/solved-golang-mongodb-insertone-returns-empty-id-objectid-000000000000000000000000.647000
+	 *
+	 * get the inserted ID string
+	 */
+	oid, _ := result.InsertedID.(primitive.ObjectID)
+	return fmt.Sprintf("%v", oid.Hex()), err
 }
 
 // 2. Получить книгу:
@@ -110,6 +117,22 @@ func GetBook(id string) (Book, error) {
 		return b, err
 	}
 	return b, nil
+}
+
+func GetUser(id string) (models.User, error) {
+	var u models.User
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return u, err
+	}
+
+	err = UsersCollection.
+		FindOne(Ctx, bson.D{{"_id", objectId}}).
+		Decode(&u)
+	if err != nil {
+		return u, err
+	}
+	return u, nil
 }
 
 // 3. Получить книги:

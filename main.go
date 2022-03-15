@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"mongodb-go-tutorial/app"
 	"mongodb-go-tutorial/models"
+	"strconv"
 	"time"
 )
 
@@ -28,6 +29,44 @@ func RandomString(n int) string {
 	return string(s)
 }
 
+/**
+ * @see https://stackoverflow.com/questions/24987131/how-to-parse-unix-timestamp-to-time-time
+ *      https://golang.cafe/blog/golang-time-format-example.html
+ */
+func ToString(date primitive.Timestamp, layout string) string {
+	uintDate := strconv.FormatUint(uint64(date.T), 10)
+	intDate, err := strconv.ParseInt(uintDate, 10, 64)
+
+	if err != nil {
+		panic(err)
+	}
+	unixDate := time.Unix(intDate, 0)
+
+	return unixDate.Format(layout)
+}
+
+func Print(user models.User) {
+	ObjectID := user.ObjectID.Hex()
+	Username := user.Username
+	Email := user.Email
+	Password := user.Password
+	CreatedAt := ToString(user.CreatedAt, time.RFC822)
+	DeactivatedAt := ToString(user.DeactivatedAt, time.RFC822)
+	fmt.Printf("\nObjectID='%v'; Username='%v'; Email='%v'; Password='%v'; CreatedAt='%v'; DeactivatedAt='%v'; \n\n",
+		ObjectID, Username, Email, Password, CreatedAt, DeactivatedAt)
+}
+
+func PrintList(u int, user models.User) {
+	ObjectID := user.ObjectID.Hex()
+	Username := user.Username
+	Email := user.Email
+	Password := user.Password
+	CreatedAt := ToString(user.CreatedAt, time.RFC822)
+	DeactivatedAt := ToString(user.DeactivatedAt, time.RFC822)
+	fmt.Printf("%v. ObjectID='%v'; Username='%v'; Email='%v'; Password='%v'; CreatedAt='%v'; DeactivatedAt='%v'; \n",
+		u, ObjectID, Username, Email, Password, CreatedAt, DeactivatedAt)
+}
+
 func main() {
 
 	test("aaa", "bbb", "ccc")
@@ -35,7 +74,7 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 	s := RandomString(22)
 	se := base64.StdEncoding.EncodeToString([]byte(s))
-	fmt.Printf("%v == %v \n", s, se)
+	log.Printf("New Password: '%v' == '%v' \n", s, se)
 
 	app.Setup()
 
@@ -48,25 +87,36 @@ func main() {
 	 */
 	//
 	password := RandomString(22)
-	newUser := models.User{primitive.NewObjectID(), "Alex", "alex@smarttrader.com.ua", base64.StdEncoding.EncodeToString([]byte(password)), time.Now(), time.Now()}
+	newUser := models.User{
+		primitive.NewObjectID(),
+		"Alex",
+		"alex@smarttrader.com.ua",
+		base64.StdEncoding.EncodeToString([]byte(password)),
+		primitive.Timestamp{T: uint32(time.Now().Unix())},
+		primitive.Timestamp{T: uint32(time.Now().Unix())},
+	}
 
-	newUserId, err := app.CreateUser(newUser)
+	strNewUserId, err := app.CreateUser(newUser)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("New UserID = ", newUserId)
+	log.Println("New UserID:", strNewUserId)
+
+	user, err := app.GetUser(strNewUserId)
+	if err != nil {
+		log.Fatal(err)
+	}
+	Print(user)
 
 	users, err := app.GetUsers()
 	if err != nil {
 		log.Fatal(err)
 	}
 	for u, user := range users {
-		stringObjectID := user.ObjectID.Hex()
-		fmt.Printf("%v. %v %v; \n", u, stringObjectID, user)
+		PrintList(u, user)
 	}
 
 	//
-
 	//app.CreateBook(app.Book{ "How to Use Go With MongoDB", "GeeksforGeeks", 100 }) // TODO: 622fd2246de12e1b7f36c4db
 	//app.CreateBook(app.Book{ "How to Do CRUD Transactions in MongoDB with Go", "hackajob Staff", 99 }) // TODO: 622fd2246de12e1b7f36c4dc
 	//app.CreateBook(app.Book{ "MongoDB Go Driver туториал", "pocoZ", 101 }) // TODO: 622fd2246de12e1b7f36c4dd
