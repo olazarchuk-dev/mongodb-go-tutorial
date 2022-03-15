@@ -50,8 +50,8 @@ func Print(user models.User) {
 	Username := user.Username
 	Email := user.Email
 	Password := user.Password
-	CreatedAt := ToString(user.CreatedAt, time.RFC822)
-	DeactivatedAt := ToString(user.DeactivatedAt, time.RFC822)
+	CreatedAt := ToString(user.CreatedAt, time.Stamp)
+	DeactivatedAt := ToString(user.DeactivatedAt, time.Stamp)
 	fmt.Printf("\nID='%v'; Username='%v'; Email='%v'; Password='%v'; CreatedAt='%v'; DeactivatedAt='%v'; \n\n",
 		ID, Username, Email, Password, CreatedAt, DeactivatedAt)
 }
@@ -61,8 +61,8 @@ func PrintList(u int, user models.User) {
 	Username := user.Username
 	Email := user.Email
 	Password := user.Password
-	CreatedAt := ToString(user.CreatedAt, time.RFC822)
-	DeactivatedAt := ToString(user.DeactivatedAt, time.RFC822)
+	CreatedAt := ToString(user.CreatedAt, time.Stamp)
+	DeactivatedAt := ToString(user.DeactivatedAt, time.Stamp)
 	fmt.Printf("%v. ID='%v'; Username='%v'; Email='%v'; Password='%v'; CreatedAt='%v'; DeactivatedAt='%v'; \n",
 		u, ID, Username, Email, Password, CreatedAt, DeactivatedAt)
 }
@@ -96,7 +96,7 @@ func main() {
 		"alex@smarttrader.com.ua",
 		RandomString(22),
 		time.Now(),
-		time.Now(),
+		time.Now().AddDate(0, 0, 7),
 	)
 
 	strNewUserId, err := app.CreateUser(newUser)
