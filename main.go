@@ -46,25 +46,25 @@ func ToString(date primitive.Timestamp, layout string) string {
 }
 
 func Print(user models.User) {
-	ObjectID := user.ObjectID.Hex()
+	ID := user.ID.Hex()
 	Username := user.Username
 	Email := user.Email
 	Password := user.Password
 	CreatedAt := ToString(user.CreatedAt, time.RFC822)
 	DeactivatedAt := ToString(user.DeactivatedAt, time.RFC822)
-	fmt.Printf("\nObjectID='%v'; Username='%v'; Email='%v'; Password='%v'; CreatedAt='%v'; DeactivatedAt='%v'; \n\n",
-		ObjectID, Username, Email, Password, CreatedAt, DeactivatedAt)
+	fmt.Printf("\nID='%v'; Username='%v'; Email='%v'; Password='%v'; CreatedAt='%v'; DeactivatedAt='%v'; \n\n",
+		ID, Username, Email, Password, CreatedAt, DeactivatedAt)
 }
 
 func PrintList(u int, user models.User) {
-	ObjectID := user.ObjectID.Hex()
+	ID := user.ID.Hex()
 	Username := user.Username
 	Email := user.Email
 	Password := user.Password
 	CreatedAt := ToString(user.CreatedAt, time.RFC822)
 	DeactivatedAt := ToString(user.DeactivatedAt, time.RFC822)
-	fmt.Printf("%v. ObjectID='%v'; Username='%v'; Email='%v'; Password='%v'; CreatedAt='%v'; DeactivatedAt='%v'; \n",
-		u, ObjectID, Username, Email, Password, CreatedAt, DeactivatedAt)
+	fmt.Printf("%v. ID='%v'; Username='%v'; Email='%v'; Password='%v'; CreatedAt='%v'; DeactivatedAt='%v'; \n",
+		u, ID, Username, Email, Password, CreatedAt, DeactivatedAt)
 }
 
 func main() {
@@ -86,15 +86,18 @@ func main() {
 	 *      https://stackoverflow.com/questions/22892120/how-to-generate-a-random-string-of-a-fixed-length-in-go
 	 */
 	//
+
+	/**
+	 * @see https://stackoverflow.com/questions/37135193/how-to-set-default-values-in-go-structs
+	 */
 	password := RandomString(22)
-	newUser := models.User{
-		primitive.NewObjectID(),
+	newUser := models.NewUser(
 		"Alex",
 		"alex@smarttrader.com.ua",
-		base64.StdEncoding.EncodeToString([]byte(password)),
+		password,
 		primitive.Timestamp{T: uint32(time.Now().Unix())},
 		primitive.Timestamp{T: uint32(time.Now().Unix())},
-	}
+	)
 
 	strNewUserId, err := app.CreateUser(newUser)
 	if err != nil {
