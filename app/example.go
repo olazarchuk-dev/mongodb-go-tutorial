@@ -222,6 +222,32 @@ func FindAuthorBooks(fullName string) ([]Book, error) {
 	return a[0].Books, err
 }
 
+type NameUsers struct {
+	Name  string `bson:"username"`
+	Users []models.User
+}
+
+func FindNameUsers(username string) ([]models.User, error) {
+	matchStage := bson.D{{"$match", bson.D{{"username", username}}}}
+
+	lookupStage := bson.D{{"$lookup",
+		bson.D{{"from", "users"},
+			{"localField", "username"},
+			{"foreignField", "username"},
+			{"as", "users"}}}}
+
+	showLoadedCursor, err := UsersCollection.Aggregate(Ctx, mongo.Pipeline{matchStage, lookupStage})
+	if err != nil {
+		return nil, err
+	}
+
+	var a []NameUsers
+	if err = showLoadedCursor.All(Ctx, &a); err != nil { // https://jira.mongodb.org/browse/GODRIVER-1129
+		return nil, err
+	}
+	return a[0].Users, err
+}
+
 // 6. Удалить книгу:
 func DeleteBook(id primitive.ObjectID) error {
 	_, err := BooksCollection.DeleteOne(Ctx, bson.D{{"_id", id}})

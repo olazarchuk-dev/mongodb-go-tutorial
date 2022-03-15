@@ -125,6 +125,22 @@ func main() {
 	}
 
 	//
+	fmt.Println('\n')
+
+	//name := "Dmytry2"
+	name := "Alex"
+	nameUsers, err := app.FindNameUsers(name)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for n, user := range nameUsers {
+		PrintList(n, user)
+	}
+
+	fmt.Println('\n')
+	//
+
+	//
 	//app.CreateBook(app.Book{ "How to Use Go With MongoDB", "GeeksforGeeks", 100 }) // TODO: 622fd2246de12e1b7f36c4db
 	//app.CreateBook(app.Book{ "How to Do CRUD Transactions in MongoDB with Go", "hackajob Staff", 99 }) // TODO: 622fd2246de12e1b7f36c4dc
 	//app.CreateBook(app.Book{ "MongoDB Go Driver туториал", "pocoZ", 101 }) // TODO: 622fd2246de12e1b7f36c4dd
