@@ -1,10 +1,14 @@
 package main
 
 import (
+	"encoding/base64"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"log"
+	"math/rand"
 	"mongodb-go-tutorial/app"
+	"mongodb-go-tutorial/models"
+	"time"
 )
 
 func test(str ...string) {
@@ -14,11 +18,54 @@ func test(str ...string) {
 
 }
 
+func RandomString(n int) string {
+	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+
+	s := make([]rune, n)
+	for i := range s {
+		s[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(s)
+}
+
 func main() {
 
 	test("aaa", "bbb", "ccc")
 
+	rand.Seed(time.Now().UnixNano())
+	s := RandomString(22)
+	se := base64.StdEncoding.EncodeToString([]byte(s))
+	fmt.Printf("%v == %v \n", s, se)
+
 	app.Setup()
+
+	/**
+	 * @see https://stackoverflow.com/questions/60864873/primitive-objectid-to-string-in-golang
+	 *      https://golangify.com/unix-timestamp
+	 *      https://yourbasic.org/golang/convert-string-to-byte-slice
+	 *      https://golangdocs.com/generate-random-string-in-golang
+	 *      https://stackoverflow.com/questions/22892120/how-to-generate-a-random-string-of-a-fixed-length-in-go
+	 */
+	//
+	password := RandomString(22)
+	newUser := models.User{primitive.NewObjectID(), "Alex", "alex@smarttrader.com.ua", base64.StdEncoding.EncodeToString([]byte(password)), time.Now(), time.Now()}
+
+	newUserId, err := app.CreateUser(newUser)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("New UserID = ", newUserId)
+
+	users, err := app.GetUsers()
+	if err != nil {
+		log.Fatal(err)
+	}
+	for u, user := range users {
+		stringObjectID := user.ObjectID.Hex()
+		fmt.Printf("%v. %v %v; \n", u, stringObjectID, user)
+	}
+
+	//
 
 	//app.CreateBook(app.Book{ "How to Use Go With MongoDB", "GeeksforGeeks", 100 }) // TODO: 622fd2246de12e1b7f36c4db
 	//app.CreateBook(app.Book{ "How to Do CRUD Transactions in MongoDB with Go", "hackajob Staff", 99 }) // TODO: 622fd2246de12e1b7f36c4dc

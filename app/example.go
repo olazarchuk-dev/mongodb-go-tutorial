@@ -9,12 +9,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
+	"mongodb-go-tutorial/models"
 	"os"
 )
 
 var (
 	BooksCollection   *mongo.Collection
 	AuthorsCollection *mongo.Collection
+	UsersCollection   *mongo.Collection
 	Ctx               = context.TODO()
 )
 
@@ -49,6 +51,7 @@ func Setup() {
 	db := client.Database(os.Getenv("mongo_database"))
 	BooksCollection = db.Collection("books")
 	AuthorsCollection = db.Collection("authors")
+	UsersCollection = db.Collection("users")
 }
 
 /**
@@ -78,6 +81,14 @@ type Book struct {
 // 1. Создать книгу:
 func CreateBook(b Book) (string, error) {
 	result, err := BooksCollection.InsertOne(Ctx, b)
+	if err != nil {
+		return "0", err
+	}
+	return fmt.Sprintf("%v", result.InsertedID), err
+}
+
+func CreateUser(u models.User) (string, error) {
+	result, err := UsersCollection.InsertOne(Ctx, u)
 	if err != nil {
 		return "0", err
 	}
@@ -121,6 +132,27 @@ func GetBooks() ([]Book, error) {
 	}
 
 	return books, nil
+}
+
+func GetUsers() ([]models.User, error) {
+	var user models.User
+	var users []models.User
+
+	cursor, err := UsersCollection.Find(Ctx, bson.D{})
+	if err != nil {
+		defer cursor.Close(Ctx)
+		return users, err
+	}
+
+	for cursor.Next(Ctx) {
+		err := cursor.Decode(&user)
+		if err != nil {
+			return users, err
+		}
+		users = append(users, user)
+	}
+
+	return users, nil
 }
 
 // 4. Обновить книгу:
