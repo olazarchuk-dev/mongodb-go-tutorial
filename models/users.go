@@ -3,6 +3,7 @@ package models
 import (
 	"encoding/base64"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"time"
 )
 
 //User is the structure we work with
@@ -16,14 +17,14 @@ type User struct {
 }
 
 // NewUser create new instance of User
-func NewUser(username string, email string, password string, createdAt primitive.Timestamp, deactivatedAt primitive.Timestamp) User {
+func NewUser(username string, email string, password string, createdAt time.Time, deactivatedAt time.Time) User {
 	user := User{}
 	user.ID = primitive.NewObjectID()
 	user.Username = username
 	user.Email = email
 	user.Password = base64.StdEncoding.EncodeToString([]byte(password))
-	user.CreatedAt = createdAt
-	user.DeactivatedAt = deactivatedAt
+	user.CreatedAt = primitive.Timestamp{T: uint32(createdAt.Unix())}
+	user.DeactivatedAt = primitive.Timestamp{T: uint32(deactivatedAt.Unix())}
 	return user
 }
 

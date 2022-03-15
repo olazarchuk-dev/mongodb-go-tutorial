@@ -89,14 +89,14 @@ func main() {
 
 	/**
 	 * @see https://stackoverflow.com/questions/37135193/how-to-set-default-values-in-go-structs
+	 *      https://www.codegrepper.com/code-examples/go/golang+timestamp+type
 	 */
-	password := RandomString(22)
 	newUser := models.NewUser(
 		"Alex",
 		"alex@smarttrader.com.ua",
-		password,
-		primitive.Timestamp{T: uint32(time.Now().Unix())},
-		primitive.Timestamp{T: uint32(time.Now().Unix())},
+		RandomString(22),
+		time.Now(),
+		time.Now(),
 	)
 
 	strNewUserId, err := app.CreateUser(newUser)
