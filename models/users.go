@@ -28,10 +28,6 @@ func NewUser(username string, email string, password string, createdAt time.Time
 	return user
 }
 
-func AddDate(years int, months int, days int) time.Time {
-	return time.Now().AddDate(years, months, days)
-}
-
 //type User struct {
 //	ID            primitive.ObjectID  `bson:"_id" json:"_id" default:primitive.NewObjectID()`
 //	Username      string              `json:"username" gorm:"unique" bson:"username,omitempty"`

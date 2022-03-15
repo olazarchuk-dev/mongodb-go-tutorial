@@ -67,6 +67,10 @@ func PrintList(u int, user models.User) {
 		u, ID, Username, Email, Password, CreatedAt, DeactivatedAt)
 }
 
+func AddDate(years int, months int, days int) time.Time {
+	return time.Now().AddDate(years, months, days)
+}
+
 func main() {
 
 	test("aaa", "bbb", "ccc")
@@ -96,8 +100,8 @@ func main() {
 		"alex@smarttrader.com.ua",
 		RandomString(22),
 		time.Now(),
-		time.Now().AddDate(0, 0, 7),
-		//models.AddDate(0, 0, 7),
+		//time.Now().AddDate(0, 0, 7),
+		AddDate(0, 0, 7),
 	)
 
 	strNewUserId, err := app.CreateUser(newUser)
